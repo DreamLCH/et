@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="UserMapper">
+
+  <!-- 该映射下有哪些执行的SQL语句  select id 取编号，resultType 描述该SQL语句执行返回的数据类型,该数据类型可以直接为Java类型 -->
+  <select id="get" resultType="mybatis.model.User">
+    select * from user
+  </select>
+  
+  
+  <insert id="add">
+  	<!-- 获取调用方法传入的参数，不需要再XML上指定参数(指定任务问题) ${} #{} -->
+  	insert into user(name,sex,age) values(#{name},#{sex},#{age})
+  </insert>
+</mapper>

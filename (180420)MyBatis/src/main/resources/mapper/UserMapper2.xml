@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="dao.UserDao">
+  
+	  <resultMap type="User" id="UserMap">
+	  	<id column="id" property="id"/>
+	  	<result column="name" property="name"/>
+	  	<result column="sex" property="sex"/>
+	  	<result column="age" property="age"/>
+	  </resultMap>
+	
+	  <!-- 该映射下有哪些执行的SQL语句  select id 取编号，resultType 描述该SQL语句执行返回的数据类型,该数据类型可以直接为Java类型 -->
+	  <select id="get" resultType="mybatis.model.User">
+	    select * from user
+	  </select>
+	  
+	  <cache eviction="FIFO" size="2"></cache>
+	  <select id="select" resultType="mybatis.model.User">
+	  	select <include refid="selectColumns"></include>
+	  	from user u where name like '${name}%' and sex = #{sex}
+	  </select>
+	  
+	  
+	  <sql id="selectColumns">
+	  	u.id,u.name,u.sex,u.age
+	  </sql>
+	  
+	  <insert id="add" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+	  	insert into user(name,sex,age) values(#{name},#{sex},#{age})
+	  </insert>
+</mapper>
