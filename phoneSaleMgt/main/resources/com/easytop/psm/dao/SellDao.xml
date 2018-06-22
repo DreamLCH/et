@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.easytop.psm.dao.SellDao">
+  	<resultMap type="Sell" id="sellDao">
+  		<id column="name" property="name"/>
+  		<result column="s_type" property="type"/>
+  		<result column="s_date" property="date"/>
+  	</resultMap>
+  	
+  	
+	<insert id="addSell" >
+		insert into Sell values(default,#{name},#{brand},#{type},#{date},#{number})
+	</insert>
+	
+	
+	<delete id="deleteSell">
+		delete from sell where id=#{0}
+	</delete>
+	
+	
+	<select id="querySellData" resultType="Map">
+		select s.* from (select s.id,s.s_date,s.name,r.area,s.brand,s.s_type,s.number from sell s,retailer r where s.name = r.name) s 
+		<where>
+			<if test="search!=null and search!=''">
+				and concat(s.name,s.id,s.area,s.brand,s.s_type,s.number) like '%${search}%' 
+			</if>
+		</where>
+		limit #{offset},#{limit}
+	</select>
+	
+	
+	<select id="queryAllRecord" resultType="int">
+		select count(*) from (select s.id,s.s_date,s.name,r.area,s.brand,s.s_type,s.number from sell s,retailer r where s.name = r.name) s
+		<where>
+			<if test="search!=null and search!=''">
+				and concat(s.name,s.id,s.area,s.brand,s.s_type,s.number) like '%${search}%' 
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="queryAllSell" resultType="java.util.Map">
+		select s.brand,s.s_date,s.s_type,t.size,s.number,(s.number*t.price) sales,t.price from sell s,t_phone t
+		<where>
+			<if test="true">
+				s.s_type=t.t_type
+			</if>
+			<if test="brand!=null and brand!=''">
+				and s.brand = #{brand}
+			</if>
+			<if test="date!=null and date!=''">
+				and year(s.s_date) = #{date}
+			</if>
+		</where>
+		limit #{offset},#{limit}
+	</select>
+	
+	
+	<select id="queryAllSellRecord" resultType="int">
+		select count(*) from sell s,t_phone t
+		<where>
+			<if test="true">
+				s.s_type=t.t_type
+			</if>
+			<if test="brand!=null and brand!=''">
+				and s.brand = #{brand}
+			</if>
+			<if test="date!=null and date!=''">
+				and year(s.s_date) = #{date}
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="queryAllRetailer" resultType="java.lang.String">
+		select name from sell group by name
+	</select>
+	
+	
+	<select id="queryAllBrand" resultType="java.lang.String">
+		select brand from sell group by brand
+	</select>
+	
+	
+	<select id="queryPhoneType" resultType="java.lang.String">
+		select s.s_type from sell s where brand = #{brand} and year(s_date) = #{date}  group by s_type
+	</select>
+	
+	
+	<select id="queryTypeNumber" resultType="java.util.LinkedHashMap">
+		select sum(case month(s.s_date) when 01 then s.number else 0 end) '1',
+		sum(case month(s.s_date) when 02 then s.number else 0 end) '2',
+		sum(case month(s.s_date) when 03 then s.number else 0 end) '3',
+		sum(case month(s.s_date) when 04 then s.number else 0 end) '4',
+		sum(case month(s.s_date) when 05 then s.number else 0 end) '5',
+		sum(case month(s.s_date) when 06 then s.number else 0 end) '6',
+		sum(case month(s.s_date) when 07 then s.number else 0 end) '7',
+		sum(case month(s.s_date) when 08 then s.number else 0 end) '8',
+		sum(case month(s.s_date) when 09 then s.number else 0 end) '9',
+		sum(case month(s.s_date) when 10 then s.number else 0 end) '10',
+		sum(case month(s.s_date) when 11 then s.number else 0 end) '11',
+		sum(case month(s.s_date) when 12 then s.number else 0 end) '12'
+		 from sell s where year(s.s_date) = #{date} and s.s_type = #{type}
+	</select>
+	
+	
+	
+	
+	<select id="querySalesVolume" resultType="java.util.LinkedHashMap">
+		select s.name '0',sum(case month(s.s_date) when 01 then s.number else 0 end) '1',
+		sum(case month(s.s_date) when 02 then s.number else 0 end) '2',
+		sum(case month(s.s_date) when 03 then s.number else 0 end) '3',
+		sum(case month(s.s_date) when 04 then s.number else 0 end) '4',
+		sum(case month(s.s_date) when 05 then s.number else 0 end) '5',
+		sum(case month(s.s_date) when 06 then s.number else 0 end) '6',
+		sum(case month(s.s_date) when 07 then s.number else 0 end) '7',
+		sum(case month(s.s_date) when 08 then s.number else 0 end) '8',
+		sum(case month(s.s_date) when 09 then s.number else 0 end) '9',
+		sum(case month(s.s_date) when 10 then s.number else 0 end) '10',
+		sum(case month(s.s_date) when 11 then s.number else 0 end) '11',
+		sum(case month(s.s_date) when 12 then s.number else 0 end) '12'
+		 from sell s where year(s.s_date) = #{year} group by s.name limit #{offset},#{limit}
+	</select>
+	
+	
+	<select id="queryAllRetailerRecord" resultType="int">
+		select count(*) from (select s.name '0',sum(case month(s.s_date) when 01 then s.number else 0 end) '1',
+		sum(case month(s.s_date) when 02 then s.number else 0 end) '2',
+		sum(case month(s.s_date) when 03 then s.number else 0 end) '3',
+		sum(case month(s.s_date) when 04 then s.number else 0 end) '4',
+		sum(case month(s.s_date) when 05 then s.number else 0 end) '5',
+		sum(case month(s.s_date) when 06 then s.number else 0 end) '6',
+		sum(case month(s.s_date) when 07 then s.number else 0 end) '7',
+		sum(case month(s.s_date) when 08 then s.number else 0 end) '8',
+		sum(case month(s.s_date) when 09 then s.number else 0 end) '9',
+		sum(case month(s.s_date) when 10 then s.number else 0 end) '10',
+		sum(case month(s.s_date) when 11 then s.number else 0 end) '11',
+		sum(case month(s.s_date) when 12 then s.number else 0 end) '12'
+		 from sell s where year(s.s_date) = #{0} group by s.name) s;
+	</select>
+	
+	
+	
+	<select id="queryAllArea" resultType="java.util.LinkedHashMap">
+		SELECT r.area '0', SUM(CASE MONTH(s.s_date) WHEN 01 THEN s.number else 0 END)  '1',
+		SUM(CASE MONTH(s.s_date) WHEN 02 THEN s.number else 0 END)  '2',
+		SUM(CASE MONTH(s.s_date) WHEN 03 THEN s.number else 0 END)  '3',
+		SUM(CASE MONTH(s.s_date) WHEN 04 THEN s.number else 0 END)  '4',
+		SUM(CASE MONTH(s.s_date) WHEN 05 THEN s.number else 0 END)  '5',
+		SUM(CASE MONTH(s.s_date) WHEN 06 THEN s.number else 0 END)  '6',
+		SUM(CASE MONTH(s.s_date) WHEN 07 THEN s.number else 0 END)  '7',
+		SUM(CASE MONTH(s.s_date) WHEN 08 THEN s.number else 0 END)  '8',
+		SUM(CASE MONTH(s.s_date) WHEN 09 THEN s.number else 0 END)  '9',
+		SUM(CASE MONTH(s.s_date) WHEN 10 THEN s.number else 0 END)  '10',
+		SUM(CASE MONTH(s.s_date) WHEN 11 THEN s.number else 0 END)  '11',
+		SUM(CASE MONTH(s.s_date) WHEN 12 THEN s.number else 0 END)  '12',
+		SUM(s.number) '13' 
+		FROM retailer r JOIN sell s  ON r.name = s.name 
+		WHERE YEAR(s.s_date) = #{year} GROUP BY r.area limit #{offset},#{limit}
+	</select>
+	
+	
+	<select id="queryAllAreaRecord" resultType="int">
+		select count(*) from(SELECT r.area '0', SUM(CASE MONTH(s.s_date) WHEN 01 THEN s.number else 0 END)  '1',
+		SUM(CASE MONTH(s.s_date) WHEN 02 THEN s.number else 0 END)  '2',
+		SUM(CASE MONTH(s.s_date) WHEN 03 THEN s.number else 0 END)  '3',
+		SUM(CASE MONTH(s.s_date) WHEN 04 THEN s.number else 0 END)  '4',
+		SUM(CASE MONTH(s.s_date) WHEN 05 THEN s.number else 0 END)  '5',
+		SUM(CASE MONTH(s.s_date) WHEN 06 THEN s.number else 0 END)  '6',
+		SUM(CASE MONTH(s.s_date) WHEN 07 THEN s.number else 0 END)  '7',
+		SUM(CASE MONTH(s.s_date) WHEN 08 THEN s.number else 0 END)  '8',
+		SUM(CASE MONTH(s.s_date) WHEN 09 THEN s.number else 0 END)  '9',
+		SUM(CASE MONTH(s.s_date) WHEN 10 THEN s.number else 0 END)  '10',
+		SUM(CASE MONTH(s.s_date) WHEN 11 THEN s.number else 0 END)  '11',
+		SUM(CASE MONTH(s.s_date) WHEN 12 THEN s.number else 0 END)  '12',
+		SUM(s.number) '13' 
+		FROM retailer r JOIN sell s  ON r.name = s.name 
+		WHERE YEAR(s.s_date) = #{0} GROUP BY r.area) s
+	</select>
+	
+	
+	<select id="queryAllNum" resultType="int">
+		select * from(
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '1' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '2' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '3' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '4' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '5' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '6' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '7' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '8' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '9' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '10' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '11' and YEAR(s_date)=#{year} union all
+		 select ifnull(sum(number),0) as #{brand} from sell where brand = #{brand} and month(s_date) = '12' and YEAR(s_date)=#{year} 
+		 )td;
+	</select>
+	
+	
+	<sql id="selectColumns">
+		s.name,s.brand,s.s_type,s.s_date,s.number
+	</sql>
+  </mapper>

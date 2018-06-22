@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+
+	<!-- 默认的注解映射,将springmvc注解的action交给servlet处理 -->
+	<mvc:annotation-driven validator="localValidatorFactoryBean">
+		<mvc:message-converters>
+			<!-- json消息转换器 java json -->
+			<bean class="org.springframework.http.converter.json.GsonHttpMessageConverter"></bean>	
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<!-- spring mvc 配置拦截/，所有资源都被拦截导致图片无法显示，添加下面配置将控制层以外的资源交回给servlet处理 -->
+	<mvc:default-servlet-handler />
+
+	<!-- 自定义验证器， 手工注入国际化 -->
+	<bean id="localValidatorFactoryBean"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="validationMessageSource" ref="messageSource"></property>
+	</bean>
+
+
+
+
+	<!-- 配置Spring自动扫描对应的包，并创建包下面类的实例对象 -->
+	<context:component-scan base-package="com.easytop.psm.web.controller">
+	</context:component-scan>
+
+
+
+
+	<!-- 配置URL视图解析 viewResolver 名字不能动 -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<!-- 配置视图的前缀 -->
+		<property name="prefix" value="/WEB-INF/jsp/" />
+
+		<!-- 配置视图的后缀 -->
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+
+
+	<!-- 国际化资源文件 -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages/my"></property>
+	</bean>
+
+	<!-- 拦截器 用于拦截url上的参数 默认取参数locale -->
+	<mvc:interceptors>
+		<bean id="localeChangeInterceptor"
+			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+		</bean>
+		
+		<!-- 重复提交拦截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/add/**"/>
+			<bean class="com.easytop.psm.web.filter.TokenInteractor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+
+	<!-- 参数需要被临时存放在一个地方，当用户再次访问使用之前设置的参数 -->
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver"></bean>
+</beans>

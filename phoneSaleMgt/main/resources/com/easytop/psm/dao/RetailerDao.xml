@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.easytop.psm.dao.RetailerDao">
+  	<resultMap type="Retailer" id="retailerDao">
+  		<id column="id" property="id"/>
+  	</resultMap>
+  	
+  	
+	<insert id="addRetailer" >
+		insert into retailer values(default,#{name},#{area},#{principal},#{phone},#{identity},#{address},#{postcode})
+	</insert>
+	
+	
+	
+	<select id="getRetailerByName" resultMap="retailerDao">
+		select 
+		<include refid="selectColumns"></include> 
+		from retailer r where name = #{0}
+	</select>
+	
+	
+	<delete id="deleteRetailer">
+		delete from retailer where id=#{0}
+	</delete>
+	
+	
+	
+	<select id="queryAllRetailer" resultType="Map">
+		select r.id,r.name,r.area,r.principal,r.phone,r.address
+		from retailer r 
+		<where>
+			<if test="search!=null and search!=''">
+				and concat(r.name,r.id,r.area,r.principal,r.phone,r.address) like '%${search}%' 
+			</if>
+		</where>
+		limit #{offset},#{limit}
+	</select>
+	
+	
+	<select id="queryAllRecord" resultType="int">
+		select count(*) from retailer r
+		<where>
+			<if test="search!=null and search!=''">
+				and concat(r.name,r.id,r.area,r.principal,r.phone,r.address) like '%${search}%'
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="queryAllArea" resultType="java.lang.String">
+		select area from retailer group by area
+	</select>
+	
+	
+	<select id="queryArea" resultType="java.lang.String">
+		select area from retailer where name = #{0}
+	</select>
+	
+	
+	<sql id="selectColumns">
+		r.id,r.name,r.area,r.principal,r.phone,r.identity,r.address,r.postcode
+	</sql>
+  </mapper>

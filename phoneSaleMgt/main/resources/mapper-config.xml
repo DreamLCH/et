@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- 为com.easytop.psm.model包下的类批量设置类别名，如：<typeAlias type="com.easytop.psm.model.User" 
+		alias="User"/> -->
+	<typeAliases>
+		<package name="com.easytop.psm.model" />
+	</typeAliases>
+
+
+	<!-- 把com.easytop.psm.dao包下的接口映射，sql语句的xml映射文件要与接口结构一致 -->
+	<mappers>
+		<package name="com.easytop.psm.dao" />
+	</mappers>
+</configuration>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1">
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+	<!-- 解决乱码配置 -->
+	<filter>
+		<filter-name>myFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>myFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+	<!-- 配置Spring监听器，当web应用程序启动完成时，会根据 全局的contextConfigLocation创建Spring上下文 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:dao.xml;classpath:service.xml;classpath:utils.xml</param-value>
+	</context-param>
+
+
+	<!-- 配置SPringMVC框架 -->
+	<servlet>
+		<servlet-name>mvc</servlet-name>
+		<!-- spring mvc 提供的ServletClass -->
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+
+		<init-param>
+			<!-- 配置SPring，配置文件路径地址 -->
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:servlet.xml;classpath:view.xml</param-value>
+		</init-param>
+	</servlet>
+
+	<!-- servle 映射关系 -->
+	<servlet-mapping>
+		<servlet-name>mvc</servlet-name>
+		<!-- 拦截所有/的访问 -->
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+
+</web-app>
