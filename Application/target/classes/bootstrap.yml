@@ -1,0 +1,10 @@
+server: 
+    port: 8888
+spring: 
+    application: 
+        name: ms
+    profiles: 
+        active: product
+    cloud: 
+        config: 
+            uri: http://localhost:8090
