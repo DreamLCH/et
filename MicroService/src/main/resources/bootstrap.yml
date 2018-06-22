@@ -1,0 +1,24 @@
+#对外提供接口调用的端口
+server:
+  port: 8888
+#设置注册中心当前主机的主机名  
+eureka:
+  instance:
+    hostname: userservice
+    appname: userservice
+  #注册到注册中心
+  client: 
+    registerWithEureka: true
+    #是否将 注册中心上所有的微服务抓取到本地 存储
+    fetchRegistry: false
+    #该地址是将来 所有微服务用于注册到注册中心的地址 【重要】
+    serviceUrl:
+      defaultZone: http://myhost:8761/eureka/
+spring: 
+    application: 
+        name: ms
+    profiles: 
+        active: product
+    cloud: 
+        config: 
+            uri: http://localhost:8090
