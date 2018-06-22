@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.easytop.psm.dao.PhoneDao">
+  	<resultMap type="Phone" id="PhoneMap">
+  		<id column="t_id" property="id"/>
+  		<result column="t_type" property="type"/>
+  		<result column="t_date" property="date"/>
+  		<result column="t_describe" property="describe"/>
+  	</resultMap>
+  	
+  	
+	<insert id="add" >
+		insert into t_phone values(default,#{type},#{brand},#{price},#{colour},#{size},#{date},#{describe})
+	</insert>
+	
+	
+	<select id="getPhoneByType" resultMap="PhoneMap">
+		select 
+		<include refid="selectColumns"></include> 
+		from t_phone t where t_type = #{0}
+	</select>
+	
+	
+	<select id="queryAllPhone" resultMap="PhoneMap">
+		select 
+		<include refid="selectColumns"></include> 
+		from t_phone t 
+		<where>
+			<if test="keyword!=null and keyword!=''">
+				and t_type like '%${keyword}%'
+			</if>
+			<if test="brand!=null and brand!=''">
+				and brand = #{brand}
+			</if>
+			<if test="price1!=null and price1!=''">
+				and price >= #{price1}
+			</if>
+			<if test="price2!=null and price2!=''">
+				and price &lt;= #{price2}
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="queryAllBrand" resultType="java.lang.String">
+		select brand from t_phone group by brand
+	</select>
+	
+	
+	<select id="queryAllData" resultMap="PhoneMap">
+		select 
+		<include refid="selectColumns"></include> 
+		from t_phone t where brand = #{0}
+	</select>
+	
+	
+	<sql id="selectColumns">
+		t.t_id,t.t_type,t.brand,t.price,t.colour,t.size,t.t_date,t.t_describe
+	</sql>
+  </mapper>
